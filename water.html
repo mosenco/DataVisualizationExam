@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>The importance of Water</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="index.css">
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    </head>
+    <body>
+        <ul class="nav nav-tabs nav-fill">
+            
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">GENERAL VISION</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="sankey2.html">LAND USE & FOOD EMISSION</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="water.html">THE IMPORTANCE OF WATER</a>
+            </li>
+   
+          </ul>
+
+
+          <div class="container">
+              <br>
+              <br>
+              <br>
+              <br>
+              <br>
+              <h1 class="text-center">The Importance of Water</h1>
+              <br>
+              <br>
+              <br>
+              <br>
+            <p>Of course also water plays an important role in food production.
+                Water covers 71% of the earth's surface and is a renewable resource.
+                But most of the water on the planet is too salty to be used.
+                Fresh water is mostly present in glaciers or aquifers and it's very difficult to reach it.
+                In addition to being scarce and inaccessible, water is often polluted and this is the leading mortality factor in the world.
+                Indeed, as the use of fresh water for manufacturing and industry increases, pollution levels have also risen.
+                This inexhaustible good is threatened, because it risks becoming contaminated and not sufficient to satisfy everyone’s needs.
+                For the future it is necessary to develop solutions that allow a more equitable distribution of the resource, reducing waste and protecting it from pollution.
+                Let’s see how many cubes meters of water are used for a ton of a certain food product.</p>
+                <small class="font-weight-light">Source: OurWorldInData</small>
+                <br>
+                <br>
+
+                <div class="row">
+                    <div class="col-2">
+                        <div id="list1" class="dropdown-check-list" tabindex="100">
+                            <br>
+                            <br>
+                            <br>
+
+                            <span class="anchor">Select Foods</span>
+                            <ul class="items">
+                              <li><input id="mo" type="checkbox" checked value="Apples"/>Apples</li>
+                              <li><input id="mo" type="checkbox" checked value="Bananas"/>Bananas</li>
+                              <li><input id="mo" type="checkbox" checked value="Barley"/>Barley</li>
+                              <li><input id="mo" type="checkbox" checked value="Beef (beef herd)"/>Beef (beef herd)</li>
+                              <li><input id="mo" type="checkbox" checked value="Beef (dairy herd)"/>Beef (dairy herd)</li>
+                              <li><input id="mo" type="checkbox" checked value="Beet Sugar"/>Beet Sugar</li>
+                              <li><input id="mo" type="checkbox" checked value="Berries & Grapes"/>Berries & Grapes</li>
+                              <li><input id="mo" type="checkbox" checked value="Brassicas"/>Brassicas</li>
+                              <li><input id="mo" type="checkbox" checked value="Cane Sugar"/>Cane Sugar</li>
+                              <li><input id="mo" type="checkbox" checked value="Cassava"/>Cassava</li>
+                              <li><input id="mo" type="checkbox" checked value="Cheese"/>Cheese</li>
+                              <li><input id="mo" type="checkbox" checked value="Citrus Fruit"/>Citrus Fruit</li>
+                              <li><input id="mo" type="checkbox" checked value="Coffee"/>Coffee</li>
+                              <li><input id="mo" type="checkbox" checked value="Dark Chocolate"/>Dark Chocolate</li>
+                              <li><input id="mo" type="checkbox" checked value="Eggs"/>Eggs</li>
+                              <li><input id="mo" type="checkbox" checked value="Fish (farmed)"/>Fish (farmed)</li>
+                              <li><input id="mo" type="checkbox" checked value="Groundnuts"/>Groundnuts</li>
+                              <li><input id="mo" type="checkbox" checked value="Lamb & Mutton"/>Lamb & Mutton</li>
+                              <li><input id="mo" type="checkbox" checked value="Maize"/>Maize</li>
+                              <li><input id="mo" type="checkbox" checked value="Milk"/>Milk</li>
+                              <li><input id="mo" type="checkbox" checked value="Nuts"/>Nuts</li>
+                              <li><input id="mo" type="checkbox" checked value="Oatmeal"/>Oatmeal</li>
+                              <li><input id="mo" type="checkbox" checked value="Onions & Leeks"/>Onions & Leeks</li>
+                              <li><input id="mo" type="checkbox" checked value="Other Fruit"/>Other Fruit</li>
+                              <li><input id="mo" type="checkbox" checked value="Other Pulses"/>Other Pulses</li>
+                              <li><input id="mo" type="checkbox" checked value="Other Vegetables"/>Other Vegetables</li>
+                              <li><input id="mo" type="checkbox" checked value="Peas"/>Peas</li>
+                              <li><input id="mo" type="checkbox" checked value="Pig Meat"/>Pig Meat</li>
+                              <li><input id="mo" type="checkbox" checked value="Potatoes"/>Potatoes</li>
+                              <li><input id="mo" type="checkbox" checked value="Poultry Meat"/>Poultry Meat</li>
+                              <li><input id="mo" type="checkbox" checked value="Prawns (farmed)"/>Prawns (farmed)</li>
+                              <li><input id="mo" type="checkbox" checked value="Rice"/>Rice</li>
+                              <li><input id="mo" type="checkbox" checked value="Root Vegetables"/>Root Vegetables</li>
+                              <li><input id="mo" type="checkbox" checked value="Soymilk"/>Soymilk</li>
+                              <li><input id="mo" type="checkbox" checked value="Tofu (soybeans)"/>Tofu (soybeans)</li>
+                              <li><input id="mo" type="checkbox" checked value="Tomatoes"/>Tomatoes</li>
+                              <li><input id="mo" type="checkbox" checked value="Wheat & Rye"/>Wheat & Rye</li>
+                              <li><input id="mo" type="checkbox" checked value="Wine"/>Wine</li>
+
+                            </ul>
+                          </div>
+                    </div>
+                    <div id="barchart" class="col">
+
+                    </div>
+
+                </div>
+                <br>
+                <br>
+                <br>
+          </div>
+          
+    </body>
+
+    <script>
+        const wsvg = 1000; 
+        const hsvg = 400; 
+        
+        const wtot = 1000;
+        const htot = 400;
+        const margin = { top: 80, right: 20, bottom: 80, left: 50 },
+        width =  wtot - margin.left - margin.right,
+        height = htot - margin.top - margin.bottom;
+        
+        //
+        //Creo i 3 SVG
+        //
+        const svg = d3.select("#barchart")
+        .append("svg")
+        .attr("width", wsvg + "px")
+        .attr("height", hsvg + "px")
+       // .attr("class", "svgcenter")
+        .append("g")
+        .attr("transform",
+        `translate(${margin.left},${margin.top})`)
+        svg.append("text")
+        .text("Water requirement for tonne of food product")
+        .attr("transform", "translate(230,-50)")
+        svg.append("g").attr("id", "bc");
+        //initialize an X axis
+
+        const x = d3.scaleBand().range([ 0, width ]).padding(0.05);
+        const xAxis = d3.axisBottom(x);
+        svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .attr("class","myXaxis")
+        .style("font-size","10px")
+        
+        
+        // Initialize an Y axis
+        const y = d3.scaleLinear().range([height, 0]);
+        const yAxis = d3.axisLeft().scale(y);
+        svg.append("g")
+        .attr("class","myYaxis")
+        .style("font-size","10px");
+
+
+        d3.csv("water.csv").then(function(dataraw){
+            var data = dataraw;
+            Test();
+
+            
+            function Test(){
+                
+        
+            // Add X axis
+            var arrayy = new Array(data.length);
+            for(var i=0; i<data.length; i++){
+                arrayy[i] = data[i].Entity;
+            }
+        
+
+       
+
+
+            // Add X axis 
+            x.domain(arrayy);
+            svg.selectAll(".myXaxis")
+                .transition()
+                .duration(1000)
+                .call(xAxis)
+                .selectAll("text")
+            .attr("transform", "translate(-8,0)rotate(-45)")
+            .style("font-size", "10px")
+            .style("text-anchor", "end");;
+
+            // create the Y axis
+            y.domain([0, d3.max(data, function(d) { return +d.Water }) ]);
+            svg.selectAll(".myYaxis")
+                .transition()
+                .duration(1000)
+                .call(yAxis);
+
+            //Add color range. Max value are max(sumPioggia)
+            var myColor = d3.scaleLinear().domain([0, d3.max(data, function(d) { return +d.Water }) ])
+                        .range(["#003366", "#b0e0e6"])
+
+            svg.selectAll("#bc").selectAll("rect")
+            .data(data)
+            .join(
+
+                enter=>enter.append("rect")
+                .attr("fill", function(d){
+                    return myColor(d.Water);
+                })
+                .attr("x", function(d) { return x(d.Entity); })
+                .attr("y", function(d) { return y(0); })
+                .attr("width", x.bandwidth())
+                .attr("height", function(d) { 
+                    return height - y(0); })
+                
+                
+                .transition()
+                .duration(800)
+                .attr("y", function(d,i) { return y(d.Water); })
+                .attr("height", function(d,i) { 
+                    return height - y(d.Water); })
+
+                ,
+
+                update=>update
+                .transition()
+                .duration(800)
+                .attr("x", function(d,i) { return x(d.Entity); })
+                .attr("y", function(d,i) { return y(d.Water); })
+                .attr("width", x.bandwidth())
+                .attr("height", function(d,i) { 
+                    return height - y(d.Water); })
+                .attr("fill", function(d){
+              
+        
+                    return myColor(d.Water);
+                })
+                
+                ,
+
+                exit=>exit.remove()
+            )
+            
+            }
+            function FilterData(x){
+                
+            data = data.filter(function(d){ 
+                    console.log(d.Entity+" "+x);
+                return d.Entity != x;
+            })
+        }
+            
+            d3.selectAll("#mo").on("change", function() {
+            
+                console.log(d3.select(this).attr("value"));
+                data = dataraw;
+                    // FilterData(d3.select(this).attr("value"))
+                    d3.selectAll("#mo").each(function(d) {
+                        
+                    if(!d3.select(this).property('checked')){
+                        
+                        FilterData(d3.select(this).attr("value"))
+                        
+                    }
+                    });
+                    Test();
+                        
+            });
+        });
+
+        
+
+        //checkbox
+        var checkList = document.getElementById('list1');
+        checkList.getElementsByClassName('anchor')[0].onclick = function(evt) {
+        if (checkList.classList.contains('visible'))
+            checkList.classList.remove('visible');
+        else
+            checkList.classList.add('visible');
+        }
+
+    </script>
+</html>

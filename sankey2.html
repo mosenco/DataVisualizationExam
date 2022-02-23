@@ -1,0 +1,279 @@
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<head>
+  <title>Land Use & Food Emission</title>
+  <meta charset="utf-8"/>
+  <link rel="stylesheet" href="index.css">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+</head>
+
+
+<body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<!-- Load the sankey.js function -->
+<script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/sankey.js"></script>
+
+
+
+
+<ul class="nav nav-tabs nav-fill">
+            
+  <li class="nav-item">
+    <a class="nav-link" href="index.html">GENERAL VISION</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active " href="sankey2.html">LAND USE & FOOD EMISSION</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="water.html">THE IMPORTANCE OF WATER</a>
+  </li>
+
+</ul>
+<!-- Create a div where the graph will take place -->
+<div class="container">
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  
+  <h1 class="text-center">Land Use & Food Emission</h1>
+  <br>
+  <br>
+  <br>
+  <br>
+  <p>Livestock, aquaculture and agriculture need lands and large spaces.
+    If the available lands are not sufficient, the process of deforestation is used.
+    The intensive exploitation of forests leads to a change in our ecosystem, for example:
+    1) Intensification of the greenhouse effect: plants and trees, through the process of chlorophyll photosynthesis, transform the carbon dioxide present in the atmosphere into oxygen.
+    2) Less biodiversity: with deforestation, many species of animals and plants risk permanent extinction.
+    3) Climate change and hydrogeological risk: deforestation causes changes in the climate and increases hydrogeological instability. This means that the risk of landslides, floods and landslides is always higher.
+    Many square meters of land are so designated for many food products.
+    Once the various food products have been obtained, their journey does not end here: some products will feed the livestock, others will be transported by big trucks, some will also undergo a packaging process.
+    Unfortunately, all these operations lead to CO2 emissions.
+    Let’s see how many kg of CO2 are released for each kg of product and also how many square meters are designated to each product.</p>
+    <small class="font-weight-light">Source: OurWorldInData</small>
+    <br>
+<br>
+<br>
+  <div id="my_dataviz"></div>
+<br>
+<br>
+</div>
+
+
+<!-- Add style to links or they won't appear properly-->
+
+
+
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 50, right: 10, bottom: 10, left: 10},
+    width = 780 - margin.left - margin.right,
+    height = 450 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height",500)
+    .attr("class", "svgcenter")
+    .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Color scale used
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+
+// Set the sankey diagram properties
+var sankey = d3.sankey()
+    .nodeWidth(20)
+    .nodePadding(10)
+    .size([width, height]);
+
+// load the data
+d3.json("sankey2.json", function(error, graph) {
+
+
+
+
+  // Constructs a new Sankey generator with the default settings.
+  sankey
+      .nodes(graph.nodes)
+      .links(graph.links)
+      .layout(1);
+
+
+  // ----------------
+  // Create a tooltip
+  // ----------------
+  d3.select("#my_dataviz").style("position", "relative");
+  var tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+    .style("position", "absolute")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var mouseover = function(d) {
+    var percentuale=d.value*100;
+    percentuale = percentuale/d.peso;
+    percentuale = percentuale.toFixed(2);
+    tooltip
+        .html("" +percentuale+ "%")
+        .style("opacity", 1)
+  }
+  var mousemove = function(d) {
+    var xy = d3.pointer(event,svg.node());
+    tooltip
+      .style("left", (xy[0])+180 + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      .style("top", (xy[1]) + "px")
+  }
+  var mouseleave = function(d) {
+    tooltip
+      .style("opacity", 0)
+  }
+
+
+//gradient      
+const defs = svg.append("defs");
+// define utility functions
+function getGradID(d) {
+  return "linkGrad-" + d.source.name + "-" + d.target.name;
+}
+
+function nodeColor(d) {
+  return d.color = color(d.name.replace(/ .*/, ""));
+}
+
+// create gradients for the links
+
+const grads = defs.selectAll("linearGradient")
+  .data(graph.links, getGradID);
+  grads.enter().append("linearGradient")
+    .attr("id", getGradID)
+    .attr("gradientUnits", "userSpaceOnUse")
+    .attr("x1", function(d){return d.source.x;})
+    .attr("y1", function(d){return d.source.y;})
+    .attr("x2", function(d){return d.target.x;})
+    .attr("y2", function(d){return d.target.y;})
+    .html("") //erase any existing <stop> elements on update
+    .append("stop")
+    .attr("offset", "0%")
+    .attr("stop-color", function(d) {
+      return nodeColor((+d.source.x <= +d.target.x) ?
+        d.source : d.target);
+    });
+
+    defs.selectAll("linearGradient")
+  .data(graph.links, getGradID).append("stop")
+  .attr("offset", "100%")
+  .attr("stop-color", function(d) {console.log("100");
+    return nodeColor((+d.source.x > +d.target.x) ?
+      d.source : d.target)
+  });
+
+/* and the stops set as before */
+
+  // add in the links
+  var link = svg.append("g")
+    .selectAll(".link")
+    .data(graph.links)
+    .enter()
+    .append("path")
+      .attr("class", "link")
+      .attr("d", sankey.link() )
+    
+      //.attr("stroke", "grey")
+      .attr("stroke-width", function(d) { return Math.max(1, d.dy); })
+      .attr("stroke", function(d) {
+      return "url(#" + getGradID(d) + ")";
+  })
+      .sort(function(a, b) { return b.dy - a.dy; })
+   
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave);
+
+
+
+
+
+  // add in the nodes
+  var node = svg.append("g")
+    .selectAll(".node")
+    .data(graph.nodes)
+    .enter().append("g")
+      .attr("class", "node")
+      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .call(d3.drag()
+        .subject(function(d) { return d; })
+        .on("start", function() { this.parentNode.appendChild(this); })
+        .on("drag", dragmove));
+
+  // add the rectangles for the nodes
+  node
+    .append("rect")
+      .attr("height", function(d) { return d.dy; })
+      .attr("width", sankey.nodeWidth())
+      .style("fill", function(d) { return d.color = color(d.name.replace(/ .*/, "")); })
+      .style("stroke", function(d) { return d3.rgb(d.color).darker(2); })
+    // Add hover text
+    .append("title")
+      .text(function(d) { return d.name + "\n" + "There is " + d.value + " stuff in this node"; });
+
+  // add in the title for the nodes
+    node
+      .append("text")
+        .attr("x", -6)
+        .attr("y", function(d) { return d.dy / 2; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "end")
+        .attr("transform", null)
+        .text(function(d) { 
+          if(d.name == "Packaging?Transport"){
+            return d.name.replace("?", " & ");
+          }else{
+            return d.name.replace("_", " ");
+          }
+           })
+        .filter(function(d) { return d.x < width / 2; })
+        .attr("x", 6 + sankey.nodeWidth())
+        .attr("text-anchor", "start");
+
+  // the function for moving the nodes
+  function dragmove(d) {
+    d3.select(this)
+      .attr("transform",
+            "translate("
+               + d.x + ","
+               + (d.y = Math.max(
+                  0, Math.min(height - d.dy, d3.event.y))
+                 ) + ")");
+    sankey.relayout();
+    link.attr("d", sankey.link() );
+  }
+
+  svg.append("text")
+  .text("Land used for a product and food emission supply chain")
+  .attr("transform", "translate(160,-30)")
+
+});
+
+
+</script>
+</body>
+</html>

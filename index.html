@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>A general overview</title>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="index.css">
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    </head>
+    <body>
+
+        <!-- 
+            MAP CHART 
+        --> 
+        <ul class="nav nav-tabs nav-fill">
+            <button id="btnback" type="button" class="btn btn-outline-primary buttoninvisible">Back</button>
+            <li class="nav-item">
+              <a class="nav-link active" href="index.html">GENERAL VISION</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="sankey2.html">LAND USE & FOOD EMISSION</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="water.html">THE IMPORTANCE OF WATER</a>
+            </li>
+   
+          </ul>
+        
+        <div id="con1" class="container">
+                <br>
+                <br>
+                <br>
+                <br>
+                <br>
+                <h1 class="text-center">Impact of the Food in the Environment</h1>
+                <br>
+                <br>
+                <br>
+                <br>
+                <p>The choice between a vegetarian diet and an omnivorous diet is a much debated question that does not find a unique answer even by experts.
+                    Not everyone is suitable for a veg diet: indeed, the vegan diet is not recommended for children, the elderly, pregnant women, anemics and celiacs.
+                    In recent years we hear more and more often about vegetarian diets and vegan diets.
+                    Some people decide to undertake this type of diet for trend, others for various reasons, for example health, sporting achievements, environmental and ethical reasons.
+                    However, it is not always a matter of choice, some inevitably have to follow a diet rather than another and have some restrictions in the choice of foods due to intolerances or allergies, such as allergy to LTP, intolerance to red meat and similar.
+                    By the way, we are not doctors, so we cannot say which diet is certainly the best, but we can offer a way to better visualize data and allow experts, or simply curious people, to make reflections and consideration, both on foods they introduce into their body, both on earth conditions due to their choices.
+                    For example, let's take a look at the following map chart which compares the level of annual CO2 emissions of different states.</p>
+                    <small class="font-weight-light">Source: OurWorldInData</small>
+                <div id="divsvg" class="container">
+                    
+                        <br>
+                        <br>
+                    <svg id="svgmap" width="1000" height="500" >
+                        <g id="mp"></g>
+                    </svg>
+                </div>
+                
+          
+
+            <div>
+                <h3 id="rangeyn">Year 2020</h3>
+                <input id="rangey" type="range" class="form-range" min="1750" max="2020" id="customRange2" value="2020">
+            </div>
+            
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+        </div>
+
+
+        <!-- 
+            LINE CHART 
+        --> 
+        <div id="con2" class="container">
+            
+            
+            <div id="divsvg1">
+                <br>
+                <br>
+                <br>
+                <h2 id="selectedcountry" class="text-center"></h2>
+                <br>
+                <br>
+                <p>In the following linee charts, we can visualize and compare different data for the selected state.
+                    In particular we can make comparisons and see if over time people have begun to eat more animal protein rather than plant protein and so as a consequence how this choice has impacted the lands.
+                    A greater demand for food implies a greater production of that particular product, so we will also see how production has increased over time.
+                    The time period goes from 1950 to 2021.</p>
+                    <small class="font-weight-light">Source: OurWorldInData</small>
+                    <br>
+                    <br>
+            </div>
+
+            <div id="divsvg2"></div>
+
+            <div id="divsvg3"></div>
+
+            
+
+
+
+
+        </div>
+
+        <script>
+            var countryChoosen = "";
+            var mpdiv1line = 0;
+            var mpdiv2line = 0;
+            var mpdiv3line = 0;
+            var arrayy = new Array(72);
+                var anno = 1950;
+                for(var i=0; i< 72; i++){
+                    arrayy[i] = anno;
+                    anno++;
+                }
+            const ballradius = 4;
+            const bradius = 6;
+            const titlesize = 13;
+            const datesize = 15;
+            const txtsize = 12;
+            /*
+                --------------------------------------INIZIO PAGINA UNO-------------------------------------------
+            */
+
+            d3.select("#divsvg").style("position", "relative").style("width", "1000px")
+            const tooltip = d3.select("#divsvg")
+                .append("div")
+                .style("opacity", 0)
+                .attr("class", "tooltip")
+                .style("background-color", "white")
+                .style("border", "solid")
+                .style("border-width", "2px")
+                .style("border-radius", "5px")
+                .style("padding", "5px")
+                .attr("pointer-events","none")
+                .style("left", "0px")
+                .style("top", "0px")
+                .style("position", "absolute")
+            Mapp(2020);
+
+        
+            
+
+            function Mapp(year){
+                d3.select("#btnback").style("display", "none");
+                console.log( d3.select("#btnback").style("display"));
+                //SVG setup
+
+                const svg = d3.select("#svgmap"),
+                    width = +svg.attr("width"),
+                    height = +svg.attr("height");
+                svg
+                    .attr("transform", "translate(0,0)")
+                    .attr("transform","scale(1, 1)");
+                    
+                
+                    
+                
+            
+                
+                // Map and projection
+                const path = d3.geoPath();
+                const projection = d3.geoMercator()
+                .scale(100)
+                .center([0,50])
+                .translate([width / 2, height / 2]);
+
+                // Data and color scale
+                const data = new Map();
+                const dataName = new Map();
+                var mostval = 0;
+
+                // Load external data and boot
+                Promise.all([
+                d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson"),
+                d3.csv("annualco2.csv", function(d) {
+            
+                    
+                    if(parseInt(d.Emission, 10) > parseInt(mostval,10) && d.Entity != "World" && d.Entity != "Asia"){
+                        mostval = d.Emission;
+                    }
+                    if(d.Year == year){
+                        data.set(d.Code, d.Emission);
+                        dataName.set(d.Code, d.Entity);
+                    }
+                    
+                    
+                })]).then(function(loadData){
+
+                    
+                
+
+                    let topo = loadData[0]
+          
+                    //Add color range. Max value are max(sumPioggia)
+                    //var myColor = d3.scaleLinear().domain([0, d3.max(topo.features, function(d) { return +data.get(d.id);  }) ])
+                            //.range(["#f7e7ce", "#8b2323"]);
+                    var myColor =d3.scaleThreshold()
+                    .domain([100000, 1000000, 10000000, 30000000, 100000000, 500000000])
+                    .range(d3.schemeReds[7]);
+
+                    //legend
+                    svg.append("rect")
+                    .attr("stroke", "black" )
+                    .attr("fill", "white")
+                    .attr("width", 145)
+                    .attr("height", 150)
+                    .attr("transform", "translate(855,15)")
+                    .style("opacity", 0.8)
+
+                    
+                    svg.append("circle")
+                    .attr("fill", "#c0c0c0")
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,150)")
+                    .style("opacity", 0.8)
+
+                    svg.append("circle")
+                    .attr("fill", myColor(90000))
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,130)")
+                    .style("opacity", 0.8)
+
+                    svg.append("circle")
+                    .attr("fill", myColor(900000))
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,110)")
+                    .style("opacity", 0.8)
+
+                    svg.append("circle")
+                    .attr("fill", myColor(9000000))
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,90)")
+                    .style("opacity", 0.8)
+
+                    svg.append("circle")
+                    .attr("fill", myColor(29000000))
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,70)")
+                    .style("opacity", 0.8)
+
+                    svg.append("circle")
+                    .attr("fill", myColor(90000000))
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,50)")
+                    .style("opacity", 0.8)
+
+                    svg.append("circle")
+                    .attr("fill", myColor(500000000))
+                    .attr('r', bradius)
+                    .attr("transform", "translate(870,30)")
+                    .style("opacity", 0.8)
+
+                    svg.append("text")
+                    .text("500000000+")
+                    .attr("transform", "translate(880,33)")
+                    .style("font-size", "10px");
+
+                    svg.append("text")
+                    .text("100000000 to 500000000")
+                    .attr("transform", "translate(880,53)")
+                    .style("font-size", "10px");
+
+                    svg.append("text")
+                    .text("30000000 to 100000000")
+                    .attr("transform", "translate(880,73)")
+                    .style("font-size", "10px");
+
+                    svg.append("text")
+                    .text("1000000 to 30000000")
+                    .attr("transform", "translate(880,93)")
+                    .style("font-size", "10px");
+
+                    svg.append("text")
+                    .text("100000 to 1000000")
+                    .attr("transform", "translate(880,113)")
+                    .style("font-size", "10px");
+
+                    svg.append("text")
+                    .text("Less than 100000")
+                    .attr("transform", "translate(880,133)")
+                    .style("font-size", "10px");
+
+                    svg.append("text")
+                    .text("No Data")
+                    .attr("transform", "translate(880,153)")
+                    .style("font-size", "10px");
+                    //100000, 1000000, 10000000, 30000000, 100000000, 500000000])
+                    let mouseOver = function(d) {
+
+                        d3.selectAll(".Country")
+                        .transition()
+                        .duration(200)
+                        .style("opacity", .5)
+                        .style("stroke", "transparent")
+                        d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .style("opacity", 1)
+                        .style("stroke", "black");
+                        
+                        tooltip.style("opacity", 1)
+                        .html(
+                            
+                            
+                        '<h3>'+dataName.get(d3.select(this).attr("id"))+'</h3>'+
+                        '<p>Emission: '+data.get(d3.select(this).attr("id"))
+                        
+                        );
+                                    
+                    }
+
+                    let mousemove = function(d) {
+                
+                        var xy = d3.pointer(event,svg.node());
+                        tooltip//.attr("transform", "translate("+xy[0]+"  , "+xy[1]+" )");
+                            .style("left", (xy[0]-75) + "px")
+                            .style("top", (xy[1]+200) + "px")
+                        
+                    
+                    
+                    }
+
+                    let mouseLeave = function(d) {
+                        d3.selectAll(".Country")
+                        .transition()
+                        .duration(200)
+                        .style("opacity", 1)
+                        .style("stroke", "transparent")
+                        d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .style("stroke", "transparent")
+                        .style("opacity", 1)
+
+                        tooltip.style("opacity", 0)
+                            .style("left", "0px")
+                            .style("top", "0px")
+                        
+                    }
+
+                    let mouseclick = function(d){
+                        if(dataName.get(d3.select(this).attr("id")) == null){
+                            return;
+                        }
+                        scroll(0,0)
+                        countryChoosen = d3.select(this).attr("id");
+                        d3.select("#selectedcountry").text(dataName.get(d3.select(this).attr("id")));
+                        PageTwo();
+                        PageTwoTwo();
+                        PageTwoThree();
+                        
+
+                        d3.select("#con1").style("display", "none");
+                        d3.select("#con2").style("display", "block");
+                        d3.select("#btnback").style("display", "block");
+                    }
+                
+                    // Draw the map
+                    svg.select("#mp")
+                        .selectAll("path")
+                        .data(topo.features)
+                        .join(
+                            enter => enter.append("path")
+                                .attr("d", d3.geoPath()
+                                .projection(projection)
+                                )
+                                // set the color of each country
+                                .attr("fill", function (d) {
+                                    d.total = data.get(d.id) || 0; 
+                
+                                    if(d.total == 0){
+                                        return "#c0c0c0";
+                                    }else{
+                                        
+                                        return myColor(d.total);
+                                    }
+                                })
+                                .attr("id", function(d){
+                                    return d.id;
+                                })
+                                .style("stroke", "transparent")
+                                .attr("class", function(d){ return "Country" } )
+                                .style("opacity", 1)
+                            
+                            ,
+
+                            update => update
+                            .attr("d", d3.geoPath()
+                                .projection(projection)
+                                )
+                                // set the color of each country
+                                .attr("fill", function (d) {
+                                    d.total = data.get(d.id) || 0; 
+                
+                                    if(d.total == 0){
+                                        return "#c0c0c0";
+                                    }else{
+                                        return myColor(d.total);
+                                    }
+                                })
+                                .attr("id", function(d){
+                                    //return dataName.get(d.id);
+                                
+                                    return d.id;
+                                })
+                                .style("stroke", "transparent")
+                                .attr("class", function(d){ return "Country" } )
+                                .style("opacity", 1)
+
+
+
+
+                        )
+                
+                        // draw each country
+                        
+                        .on("mouseover", mouseOver )
+                        .on("mouseleave", mouseLeave )
+                        .on("mousemove", mousemove)
+                        .on("click", mouseclick)
+                    })
+
+                svg.append("text")
+                .text("Annual CO2 emission")
+                .style("font-size", "15px")
+                .attr("transform", "translate(500,25)")
+                .style("text-anchor", "middle")
+            }
+            /*
+            d3.select("#rangey").on("change", function() {
+                document.getElementById("rangeyn").innerHTML = "Year "+d3.select(this).property("value");
+                Mapp(d3.select(this).property("value"));
+            
+            });
+            */
+
+
+            
+
+            
+            const slider = document.getElementById("rangey");
+            
+            slider.oninput = function(){
+                document.getElementById("rangeyn").innerHTML = "Year "+d3.select(this).property("value");
+                Mapp(d3.select(this).property("value"));
+            }
+            
+            
+            /*
+                ----------------------------INIZIO PAGINA DUE------------------------------------------
+            */
+
+            
+                d3.select("#con2").style("display", "none");
+            
+                //
+                //SVG setup per i 3 chart
+                //
+                const wsvg = 1000; 
+                const hsvg = 400; 
+                
+                const wtot = 800;
+                const htot = 400;
+                const margin = { top: 80, right: 80, bottom: 80, left: 200 },
+                widthcon2 =  wtot - margin.left - margin.right,
+                heightcon2 = htot - margin.top - margin.bottom;
+                
+                //
+                //Creo i 3 SVG
+                //
+                const svg1 = d3.select("#divsvg1")
+                .append("svg")
+                .attr("width", wsvg + "px")
+                .attr("height", hsvg + "px")
+                .attr("class", "svgcenter")
+                .append("g")
+                .attr("transform",
+                `translate(${margin.left},${margin.top})`)
+                
+
+                const svg2 = d3.select("#divsvg2")
+                .append("svg")
+                .attr("width", wsvg + "px")
+                .attr("height", hsvg + "px")
+                .attr("class", "svgcenter")
+                .append("g")
+                .attr("transform",
+                `translate(${margin.left},${margin.top})`)
+        
+
+                const svg3 = d3.select("#divsvg3")
+                .append("svg")
+                .attr("width", wsvg + "px")
+                .attr("height", hsvg + "px")
+                .attr("class", "svgcenter")
+                .append("g")
+                .attr("transform",
+                `translate(${margin.left},${margin.top})`)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                //
+                //Implemento primo grafico
+                //
+
+                //create a <g> to put my chart there. For better control.
+                svg1.append("g").attr("id", "plant").append("path");
+                svg1.append("g").attr("id", "animal").append("path");
+        
+                //initialize an X axis
+                const x1 = d3.scaleLinear().range([ 0, widthcon2 ]);
+                const xAxis1 = d3.axisBottom(x1).tickFormat(d3.format('d'));
+                svg1.append("g")
+                .attr("transform", "translate(0," + heightcon2 + ")")
+                .attr("class","myXaxis1")
+                .style("font-size","10px");
+                
+                // Initialize an Y axis
+                const y1 = d3.scaleLinear().range([heightcon2, 0]);
+                const yAxis1 = d3.axisLeft().scale(y1);
+                svg1.append("g")
+                .attr("class","myYaxis1")
+                .style("font-size","10px");
+
+                //define tooltip point
+                const color = "#dc143c";
+                const triangle = d3.symbol()
+                .type(d3.symbolTriangle)
+                .size(500)  
+
+                // This allows to find the closest X index of the mouse:
+                const bisect = d3.bisector(function(d) { return d.date; }).left;
+                    //tooltip
+
+                //legend
+                svg1.append("rect")
+                .attr("stroke", "black" )
+                .attr("fill", "white")
+                .attr("width", 100)
+                .attr("height", 50)
+                .attr("transform", "translate(555,5)")
+                .style("opacity", 0.8)
+                
+                svg1.append("circle")
+                .attr("fill", "#58bc82")
+                .attr('r', bradius)
+                .attr("transform", "translate(570,20)")
+                .style("opacity", 0.8)
+
+                svg1.append("circle")
+                .attr("fill", "#cf8085")
+                .attr('r', bradius)
+                .attr("transform", "translate(570,40)")
+                .style("opacity", 0.8)
+
+                svg1.append("text")
+                .text("Vegetal Protein")
+                .attr("transform", "translate(580,23)")
+                .style("font-size", "10px");
+
+                svg1.append("text")
+                .text("Animal Protein")
+                .attr("transform", "translate(580,43)")
+                .style("font-size", "10px");
+
+                svg1.append("text")
+                .text("Daily protein supply of animal origin vs. plant origin, measured as the average supply in grams per person per day")
+                .style("font-size", "10px")
+                .attr("transform", "translate(250,-50)")
+                .style("text-anchor", "middle")
+
+
+
+
+                const ballplant = svg1
+                    .append('g')
+                    .append('circle')
+                    .style("fill", "#58bc82")
+                    .attr('r', ballradius)
+                    .style("opacity", 0)
+
+                const ballanimal = svg1
+                    .append('g')
+                    .append('circle')
+                    .style("fill", "#cf8085")
+                    .attr('r', ballradius)
+                    .style("opacity", 0)
+
+                const info = svg1
+                    .append("rect")
+                    .attr("stroke", "black" )
+                    .attr("stroke-width", "1px")
+                    .attr("fill", "white")
+                    .attr("width", 200)
+                    .attr("height", 130)
+                    .style("opacity", 1)
+                    .attr("pointer-events","none")
+                    .attr("rx", 10)
+                    .attr("ry", 10)
+                    .style("opacity", 0)
+                //implement tooltip point
+                const point = svg1
+                    .append("path")
+                    .attr("d", triangle)
+                    .attr("stroke", color)
+                    .attr("fill", color)
+                    .style("opacity", 0)
+
+                
+
+                const bplant = svg1
+                .append('g')
+                .append('circle')
+                .style("fill", "#58bc82")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+                const banimal = svg1
+                    .append('g')
+                    .append('circle')
+                    .style("fill", "#cf8085")
+                    .attr('r', bradius)
+                    .style("opacity", 0)
+                    
+                
+
+                //info inside tooltip
+                const txtDate = svg1.append("text")
+                    .style("opacity", 0)
+                    .style("font-size", datesize+"px")
+                    .style("text-anchor", "middle")
+                    .attr("font-weight", "bold")
+
+                const txtTitle = svg1.append("text")
+                    .style("opacity", 0)
+                    .style("font-size", titlesize+"px")
+                    .style("text-anchor", "middle")
+                    .attr("font-weight", "bold")
+
+                const txtAnimal = svg1.append("text")
+                    .style("opacity", 0)
+                    .style("font-size", txtsize+"px")
+                    .style("text-anchor", "start")
+
+                const txtPlant = svg1.append("text")
+                    .style("opacity", 0)
+                    .style("font-size", txtsize+"px")
+                    .style("text-anchor", "start")
+
+                const yname1 = svg1.append("text")
+                    .style("font-size", "10px")
+                    .text("grams")
+                    .attr("transform", "translate(-26,-3)")
+
+                const xname1 = svg1.append("text")
+                    .style("font-size", "10px")
+                    .text("year")
+                    .attr("transform", "translate(525,243)")
+
+                
+
+            function PageTwo(){
+                d3.csv("animalvsplant.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && (d.Plant != '' || d.Animal != '')){
+                        
+                        return { date : d.Year, Plant : d.Plant , Animal : d.Animal, Code : d.Code, Entity : d.Entity}
+                    }
+                    
+                }).then(
+                function(data){
+                
+                    // Add X axis 
+                    x1.domain([1950, 2021]);
+                    svg1.selectAll(".myXaxis1")
+                        .transition()
+                        .duration(1000)
+                        .call(xAxis1);
+
+                    // create the Y axis
+                    y1.domain([0, d3.max(data, function(d) { 
+             
+                        if(parseInt(d.Animal,10) > parseInt(d.Plant,10)){
+                            mpdiv1line = d.Animal;
+                            return +d.Animal;
+                        }else{
+                            mpdiv1line = d.Plant;
+                            return  +d.Plant;
+                        }
+                        
+                    }) ]);
+                    svg1.selectAll(".myYaxis1")
+                        .transition()
+                        .duration(1000)
+                        .call(yAxis1);
+
+                    
+                    //handling tooltip
+                    const mouseover = function(event, d) {
+                        
+                        txtDate.style("opacity", 1)
+                        txtTitle.style("opacity", 1)
+                        txtPlant.style("opacity", 1)
+                        txtAnimal.style("opacity", 1)
+                        info.style("opacity", 1)
+                        ballanimal.style("opacity", 1)
+                        ballplant.style("opacity", 1)
+                        bplant.style("opacity", 1)
+                        banimal.style("opacity", 1)
+                    }
+                    
+                    const mousemove = function(event, d) {
+                        var xy = d3.pointer(event,svg1.node());
+                        var x0 = x1.invert(xy[0]);
+                        var y0 = y1.invert(xy[1]);
+                        
+                        var i = bisect(data, x0, 1);
+                        var z = bisect2(arrayy, x0, 1);
+                        zd0 = arrayy[z - 1],
+                        zd1 = arrayy[z],
+                        zselectedData = x0 - zd0> zd1 - x0 ? zd1 : zd0;
+                        if(data[i] == null){
+                            return;
+                        }
+                        d0 = data[i - 1],
+                        d1 = data[i],
+                        selectedData = x0 - d0.date > d1.date - x0 ? d1 : d0;
+                        
+                        info
+                        .attr("transform", "translate("+(x1(zselectedData)+50) +","+(y1(mpdiv1line)) +")")
+            
+              
+                        
+
+                        txtDate
+                        .attr("transform", "translate("+(x1(zselectedData)+150) +","+(y1(mpdiv1line)+30) +")")
+                        .text(selectedData.date)
+
+                        txtTitle
+                        .attr("transform", "translate("+(x1(zselectedData)+150) +","+(y1(mpdiv1line)+60) +")")
+                        .text("Values in grams")
+
+                        txtPlant
+                        .attr("transform", "translate("+(x1(zselectedData)+120) +","+(y1(mpdiv1line)+85) +")")
+                        .text("Plant: "+selectedData.Plant)
+
+                        txtAnimal
+                        .attr("transform", "translate("+(x1(zselectedData)+120) +","+(y1(mpdiv1line)+105) +")")
+                        .text("Animal: "+selectedData.Animal)
+
+                        bplant
+                        .attr("transform", "translate("+(x1(zselectedData)+110) +","+(y1(mpdiv1line)+80.5) +")")
+
+                        banimal
+                        .attr("transform", "translate("+(x1(zselectedData)+110) +","+(y1(mpdiv1line)+100.5) +")")
+
+                        ballanimal
+                        .attr("transform", "translate("+(x1(selectedData.date)) +","+(y1(selectedData.Animal)) +")")
+
+                        ballplant
+                        .attr("transform", "translate("+(x1(selectedData.date)) +","+(y1(selectedData.Plant)) +")")
+
+                    
+        
+                    }
+                    
+                    const mouseleave = function(event,d) {
+
+                        txtDate.style("opacity", 0)
+                        txtTitle.style("opacity", 0)
+                        txtPlant.style("opacity", 0)
+                        txtAnimal.style("opacity", 0)
+                        info.style("opacity", 0)
+                        ballanimal.style("opacity", 0)
+                        ballplant.style("opacity", 0)
+                        bplant.style("opacity", 0)
+                        banimal.style("opacity", 0)
+                    }
+
+
+                    // Create a rect on top of the svg area: this rectangle recovers mouse position
+                    const rect = svg1
+                        .append('rect')
+                        .style("fill", "none")
+                        .style("pointer-events", "all")
+                        .attr('width', widthcon2)
+                        .attr('height', heightcon2)
+                        .on('mouseover', mouseover)
+                        .on('mousemove', mousemove)
+                        .on('mouseout', mouseleave);
+
+                
+                    
+
+                    // Add the line for plants
+                    svg1.select("#plant").select("path")
+                    .datum(data)
+                    .attr("fill", "none")
+                    .attr("stroke", "#58bc82")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x1(d.date); })
+                        .y(function(d) { return y1(d.Plant); })
+                        )
+
+                    // Add the line for animal
+                    svg1.select("#animal").select("path")
+                    .datum(data)
+                    .attr("fill", "none")
+                    .attr("stroke", "#cf8085")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x1(d.date);})
+                        .y(function(d) { return y1(d.Animal); })
+                        )
+                });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //
+            //Implemento secondo grafico
+            //
+            //create a <g> to put my chart there. For better control.
+
+            svg2.append("g").attr("id", "agricolture").append("path");
+            svg2.append("g").attr("id", "pasture").append("path");
+            
+            //initialize an X axis
+            const x2 = d3.scaleLinear().range([ 0, widthcon2 ]);
+            const xAxis2 = d3.axisBottom(x2).tickFormat(d3.format('d'));
+            svg2.append("g")
+            .attr("transform", "translate(0," + heightcon2 + ")")
+            .attr("class","myXaxis2")
+            .style("font-size","10px");
+            
+            // Initialize an Y axis
+            const y2 = d3.scaleLinear().range([heightcon2, 0]);
+            const yAxis2 = d3.axisLeft().scale(y2).tickFormat(d3.format(".0%"));
+            svg2.append("g")
+            .attr("class","myYaxis2")
+            .style("font-size","10px");
+            
+            // This allows to find the closest X index of the mouse:
+            const bisect2 = d3.bisector(function(d) { return d; }).left;
+
+
+
+            //legend
+            svg2.append("rect")
+            .attr("stroke", "black" )
+            .attr("fill", "white")
+            .attr("width", 100)
+            .attr("height", 50)
+            .attr("transform", "translate(555,5)")
+            .style("opacity", 0.8)
+            
+            svg2.append("circle")
+            .attr("fill", "#7ea07d")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,20)")
+            .style("opacity", 0.8)
+
+            svg2.append("circle")
+            .attr("fill", "#ffa059")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,40)")
+            .style("opacity", 0.8)
+
+            svg2.append("text")
+            .text("Agriculture")
+            .attr("transform", "translate(580,23)")
+            .style("font-size", "10px");
+
+            svg2.append("text")
+            .text("Pastures")
+            .attr("transform", "translate(580,43)")
+            .style("font-size", "10px");
+
+            svg2.append("text")
+            .text("Share of land area used for agriculture and for pastures, measured as a percentage of total land area")
+            .style("font-size", "10px")
+            .attr("transform", "translate(250,-50)")
+            .style("text-anchor", "middle")
+
+
+
+
+
+
+            const ballagricolture = svg2
+                .append('g')
+                .append('circle')
+                .style("fill", "#7ea07d")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballpasture = svg2
+                .append('g')
+                .append('circle')
+                .style("fill", "#ffa059")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const info2 = svg2
+                .append("rect")
+                .attr("stroke", "black" )
+                .attr("stroke-width", "1px")
+                .attr("fill", "white")
+                .attr("width", 200)
+                .attr("height", 130)
+                .style("opacity", 1)
+                .attr("pointer-events","none")
+                .attr("rx", 10)
+                .attr("ry", 10)
+                .style("opacity", 0)
+
+            
+
+            const bagricolture = svg2
+                .append('g')
+                .append('circle')
+                .style("fill", "#7ea07d")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+            const bpasture = svg2
+                .append('g')
+                .append('circle')
+                .style("fill", "#ffa059")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+            //info inside tooltip
+            const txtDate2 = svg2.append("text")
+                .style("opacity", 0)
+                .style("font-size", datesize+"px")
+                .style("text-anchor", "middle")
+                .attr("font-weight", "bold")
+
+            const txtTitle2 = svg2.append("text")
+                .style("opacity", 0)
+                .style("font-size", titlesize+"px")
+                .style("text-anchor", "middle")
+                .attr("font-weight", "bold")
+
+            const txtagricolture = svg2.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtpasture = svg2.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const yname2 = svg2.append("text")
+                .style("font-size", "10px")
+                .text("percentage")
+                .attr("transform", "translate(-26,-3)")
+
+            const xname2 = svg2.append("text")
+                .style("font-size", "10px")
+                .text("year")
+                .attr("transform", "translate(525,243)")
+            function PageTwoTwo(){
+                d3.csv("agricolture.csv", function(d){
+                    
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Agricolture != ''){
+                        
+                        return { date : d.Year, Agricolture : d.Agricolture/100 , Code : d.Code, Entity : d.Entity}
+                    }
+                    
+                }).then(
+                function(dataAgricolture){
+                    d3.csv("pastures.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Pasture != ''){
+                        
+                        return { date : d.Year, Pasture : d.Pasture/100 , Code : d.Code, Entity : d.Entity}
+                    }
+                        
+                    }).then(
+                    function(dataPasture){
+
+
+                  
+                    
+
+     
+
+
+
+
+                    // Add X axis 
+                    x2.domain([1950, 2021]);
+                    svg2.selectAll(".myXaxis2")
+                        .transition()
+                        .duration(1000)
+                        .call(xAxis2);
+
+
+
+                    var maxAgricolture = d3.max(dataAgricolture, function(d) { 
+                        return +d.Agricolture;
+                    });
+
+                    var maxPasture = d3.max(dataPasture, function(d) { 
+                        return +d.Pasture;
+                    });
+                    
+                    var yaxis2max = 0;
+                        
+                    if(parseFloat(maxAgricolture,10) > parseFloat(maxPasture,10)){
+                        mpdiv2line = maxAgricolture;
+                        yaxis2max = maxAgricolture;
+
+                    }else{
+                        mpdiv2line = maxPasture;
+                        yaxis2max = maxPasture;
+                    }
+
+                  
+
+                    
+                        
+                    // create the Y axis
+                    y2.domain([0,  yaxis2max]);
+                    svg2.selectAll(".myYaxis2")
+                        .transition()
+                        .duration(1000)
+                        .call(yAxis2);
+
+                    //handling tooltip
+                    const mouseover = function(event, d) {
+                        
+                        txtDate2.style("opacity", 1)
+                        txtTitle2.style("opacity", 1)
+                        txtagricolture.style("opacity", 1)
+                        txtpasture.style("opacity", 1)
+                        info2.style("opacity", 1)
+                        ballagricolture.style("opacity", 1)
+                        ballpasture.style("opacity", 1)
+                        bagricolture.style("opacity", 1)
+                        bpasture.style("opacity", 1)
+                    }
+
+                    const mousemove = function(event, d) {
+                        var xy = d3.pointer(event,svg2.node());
+                        var x0 = x1.invert(xy[0]);
+                        var y0 = y1.invert(xy[1]);
+                        
+                        var x = bisect(dataPasture, x0, 1);
+                        var y = bisect(dataAgricolture, x0, 1);
+                        var z = bisect2(arrayy, x0, 1);
+
+                        zd0 = arrayy[z - 1],
+                        zd1 = arrayy[z],
+                        zselectedData = x0 - zd0> zd1 - x0 ? zd1 : zd0;
+                      
+                        
+                        if(dataPasture[x] == null || dataAgricolture[y] == null){
+                            
+                            return;
+                        }
+           
+                        xd0 = dataPasture[x - 1],
+                        xd1 = dataPasture[x],
+                        xselectedData = x0 - xd0.date > xd1.date - x0 ? xd1 : xd0;
+
+                        yd0 = dataAgricolture[y - 1],
+                        yd1 = dataAgricolture[y],
+                        yselectedData = x0 - yd0.date > yd1.date - x0 ? yd1 : yd0;
+                 
+                        info2
+                        .attr("transform", "translate("+(x2(zselectedData)+50) +","+(y2(mpdiv2line)) +")")
+            
+              
+                        
+
+                        txtDate2
+                        .attr("transform", "translate("+(x2(zselectedData)+150) +","+(y2(mpdiv2line)+30) +")")
+                        .text(xselectedData.date)
+
+                        txtTitle2
+                        .attr("transform", "translate("+(x2(zselectedData)+150) +","+(y2(mpdiv2line)+60) +")")
+                        .text("Values in %")
+
+                        txtpasture
+                        .attr("transform", "translate("+(x2(zselectedData)+110) +","+(y2(mpdiv2line)+85) +")")
+                        .text("Pasture: "+parseFloat(xselectedData.Pasture*100).toFixed(2)+"%")
+
+                        txtagricolture
+                        .attr("transform", "translate("+(x2(zselectedData)+110) +","+(y2(mpdiv2line)+105) +")")
+                        .text("Agricolture: "+parseFloat(yselectedData.Agricolture*100).toFixed(2)+"%")
+
+                        bpasture
+                        .attr("transform", "translate("+(x2(zselectedData)+100) +","+(y2(mpdiv2line)+80.5) +")")
+
+                        bagricolture
+                        .attr("transform", "translate("+(x2(zselectedData)+100) +","+(y2(mpdiv2line)+100.5) +")")
+
+                        ballagricolture
+                        .attr("transform", "translate("+(x2(yselectedData.date)) +","+(y2(yselectedData.Agricolture)) +")")
+
+                        ballpasture
+                        .attr("transform", "translate("+(x2(xselectedData.date)) +","+(y2(xselectedData.Pasture)) +")")
+
+                    
+        
+                    }
+
+                    const mouseleave = function(event,d) {
+
+                        txtDate2.style("opacity", 0)
+                        txtTitle2.style("opacity", 0)
+                        txtagricolture.style("opacity", 0)
+                        txtpasture.style("opacity", 0)
+                        info2.style("opacity", 0)
+                        ballagricolture.style("opacity", 0)
+                        ballpasture.style("opacity", 0)
+                        bagricolture.style("opacity", 0)
+                        bpasture.style("opacity", 0)
+                    }
+
+
+                    const rect = svg2
+                        .append('rect')
+                        .style("fill", "none")
+                        .style("pointer-events", "all")
+                        .attr('width', widthcon2)
+                        .attr('height', heightcon2)
+                        .on('mouseover', mouseover)
+                        .on('mousemove', mousemove)
+                        .on('mouseout', mouseleave);
+
+                    
+                    // Add the line for plants
+                    svg2.select("#pasture").select("path")
+                    .datum(dataPasture)
+                    .attr("fill", "none")
+                    .attr("stroke", "#ffa059")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x2(d.date); })
+                        .y(function(d) { return y2(d.Pasture); })
+                        )
+
+                    // Add the line for animal
+                    svg2.select("#agricolture").select("path")
+                    .datum(dataAgricolture)
+                    .attr("fill", "none")
+                    .attr("stroke", "#7ea07d")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x2(d.date);})
+                        .y(function(d) { return y2(d.Agricolture); })
+                        )
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+                    });
+                });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //
+            //Implemento terzo grafico
+            //
+            svg3.append("g").attr("id", "bean").append("path");
+            svg3.append("g").attr("id", "chicken").append("path");
+            svg3.append("g").attr("id", "egg").append("path");
+            svg3.append("g").attr("id", "milk").append("path");
+            svg3.append("g").attr("id", "pea").append("path");
+            svg3.append("g").attr("id", "pig").append("path");
+            svg3.append("g").attr("id", "seafood").append("path");
+
+
+            //initialize an X axis
+            const x3 = d3.scaleLinear().range([ 0, widthcon2 ]);
+            const xAxis3 = d3.axisBottom(x3).tickFormat(d3.format('d'));
+            svg3.append("g")
+            .attr("transform", "translate(0," + heightcon2 + ")")
+            .attr("class","myXaxis3")
+            .style("font-size","10px");
+            
+            // Initialize an Y axis
+            const y3 = d3.scaleLinear().range([heightcon2, 0]);
+            const yAxis3 = d3.axisLeft().scale(y3);
+            svg3.append("g")
+            .attr("class","myYaxis3")
+            .style("font-size","10px");
+
+            // This allows to find the closest X index of the mouse:
+            const bisect3 = d3.bisector(function(d) { return d; }).left;
+
+            
+            //legend
+            svg3.append("rect")
+            .attr("stroke", "black" )
+            .attr("fill", "white")
+            .attr("width", 100)
+            .attr("height", 150)
+            .attr("transform", "translate(555,5)")
+            .style("opacity", 0.8)
+            
+            //bean
+            svg3.append("circle")
+            .attr("fill", "#8fe388")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,20)")
+            .style("opacity", 0.8)
+
+            //chicken
+            svg3.append("circle")
+            .attr("fill", "#e55c90")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,40)")
+            .style("opacity", 0.8)
+
+            //egg
+            svg3.append("circle")
+            .attr("fill", "#ffa059")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,60)")
+            .style("opacity", 0.8)
+
+            //milk
+            svg3.append("circle")
+            .attr("fill", "#d1cfb2")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,80)")
+            .style("opacity", 0.8)
+
+            //pea
+            svg3.append("circle")
+            .attr("fill", "#375543")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,100)")
+            .style("opacity", 0.8)
+
+            //pig
+            svg3.append("circle")
+            .attr("fill", "#983356")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,120)")
+            .style("opacity", 0.8)
+
+            //seafood
+            svg3.append("circle")
+            .attr("fill", "#2acaea")
+            .attr('r', bradius)
+            .attr("transform", "translate(570,140)")
+            .style("opacity", 0.8)
+
+            svg3.append("text")
+            .text("Bean")
+            .attr("transform", "translate(580,23)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Chicken")
+            .attr("transform", "translate(580,43)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Egg")
+            .attr("transform", "translate(580,63)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Milk")
+            .attr("transform", "translate(580,83)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Pea")
+            .attr("transform", "translate(580,103)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Pig")
+            .attr("transform", "translate(580,123)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Seafood")
+            .attr("transform", "translate(580,143)")
+            .style("font-size", "10px");
+
+            svg3.append("text")
+            .text("Food production (both animal and vegetal) per tonnes")
+            .style("font-size", "10px")
+            .attr("transform", "translate(250,-50)")
+            .style("text-anchor", "middle")
+
+
+
+            const ballbean = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#8fe388")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballchicken = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#e55c90")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballegg = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#ffa059")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballmilk = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#d1cfb2")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballpea = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#375543")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballpig = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#983356")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const ballseafood = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#2acaea")
+                .attr('r', ballradius)
+                .style("opacity", 0)
+
+            const info3 = svg3
+                .append("rect")
+                .attr("stroke", "black" )
+                .attr("stroke-width", "1px")
+                .attr("fill", "white")
+                .attr("width", 200)
+                .attr("height", 230)
+                .style("opacity", 1)
+                .attr("pointer-events","none")
+                .attr("rx", 10)
+                .attr("ry", 10)
+                .style("opacity", 0)
+
+            
+
+            const bbean = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#8fe388")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+            
+
+            const bchicken = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#e55c90")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+
+
+            const begg = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#ffa059")
+                .attr('r', bradius)
+                .style("opacity", 0)
+            
+            const bmilk = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#d1cfb2")
+                .attr('r', bradius)
+                .style("opacity", 0)
+        
+
+            const bpea = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#375543")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+            const bpig = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#983356")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+            const bseafood = svg3
+                .append('g')
+                .append('circle')
+                .style("fill", "#2acaea")
+                .attr('r', bradius)
+                .style("opacity", 0)
+
+            //info inside tooltip
+            const txtDate3 = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "middle")
+                .attr("font-weight", "bold")
+
+            const txtTitle3 = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "middle")
+                .attr("font-weight", "bold")
+
+            const txtbean = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtchicken = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtegg = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtmilk = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtpea = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtpig = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const txtseafood = svg3.append("text")
+                .style("opacity", 0)
+                .style("font-size", txtsize+"px")
+                .style("text-anchor", "start")
+
+            const yname3 = svg3.append("text")
+                .style("font-size", "10px")
+                .text("tonnes")
+                .attr("transform", "translate(-26,-3)")
+
+            const xname3 = svg3.append("text")
+                .style("font-size", "10px")
+                .text("year")
+                .attr("transform", "translate(525,243)")
+
+            function PageTwoThree(){
+                d3.csv("beanproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Bean != ''){
+                        return { Bean : d.Bean , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataBean){
+                    d3.csv("chickenproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Chicken != ''){
+                        return { Chicken : d.Chicken , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataChicken){
+                    d3.csv("eggproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Egg != ''){
+                        return { Egg : d.Egg , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataEgg){
+                    d3.csv("milkproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Milk != ''){
+                        return { Milk : d.Milk , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataMilk){
+                    d3.csv("peaproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Pea != ''){
+                        return { Pea : d.Pea , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataPea){
+                    d3.csv("pigmeatproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Pig != ''){
+                        return { Pig : d.Pig , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataPig){
+                    d3.csv("seafoodproduction.csv", function(d){
+                    if(countryChoosen == d.Code && d.Year >= 1950 && d.Seafood != ''){
+                        return { Seafood : d.Seafood , date : d.Year , Code : d.Code, Entity : d.Entity}
+                    }
+                }).then(
+                function(dataSeafood){
+                 
+                    // Add X axis 
+                    x3.domain([1950, 2021]);
+                    svg3.selectAll(".myXaxis3")
+                        .transition()
+                        .duration(1000)
+                        .call(xAxis3);
+
+                    var maxBean = d3.max(dataBean, function(d) { 
+                        return +d.Bean;
+                    });
+
+                    var maxChicken = d3.max(dataChicken, function(d) { 
+                        return +d.Chicken;
+                    });
+
+                    var maxEgg = d3.max(dataEgg, function(d) { 
+                        return +d.Egg;
+                    });
+
+                    var maxMilk = d3.max(dataMilk, function(d) { 
+                        return +d.Milk;
+                    });
+
+                    var maxPea = d3.max(dataPea, function(d) { 
+                        return +d.Pea;
+                    });
+
+                    var maxPig = d3.max(dataPig, function(d) { 
+                        return +d.Pig;
+                    });
+
+                    var maxSeafood = d3.max(dataSeafood, function(d) { 
+                        return +d.Seafood;
+                    });
+
+                    var yaxis3max = 0;
+
+                    yaxis3max = CheckMax(maxBean,yaxis3max);
+                    yaxis3max = CheckMax(maxChicken,yaxis3max);
+                    yaxis3max = CheckMax(maxEgg,yaxis3max);
+                    yaxis3max = CheckMax(maxMilk,yaxis3max);
+                    yaxis3max = CheckMax(maxPea,yaxis3max);
+                    yaxis3max = CheckMax(maxPig,yaxis3max);
+                    yaxis3max = CheckMax(maxSeafood,yaxis3max);
+
+        
+                    // create the Y axis
+                    y3.domain([0,  yaxis3max]);
+                    svg3.selectAll(".myYaxis3")
+                        .transition()
+                        .duration(1000)
+                        .call(yAxis3);
+
+
+                    //handling tooltip
+                    const mouseover = function(event, d) {
+                        
+                        txtDate3.style("opacity", 1)
+                        txtTitle3.style("opacity", 1)
+                        txtbean.style("opacity", 1)
+                        txtchicken.style("opacity", 1)
+                        txtegg.style("opacity", 1)
+                        txtmilk.style("opacity", 1)
+                        txtpea.style("opacity", 1)
+                        txtpig.style("opacity", 1)
+                        txtseafood.style("opacity", 1)
+                        info3.style("opacity", 1)
+                        ballbean.style("opacity", 1)
+                        ballchicken.style("opacity", 1)
+                        ballegg.style("opacity", 1)
+                        ballmilk.style("opacity", 1)
+                        ballpea.style("opacity", 1)
+                        ballpig.style("opacity", 1)
+                        ballseafood.style("opacity", 1)
+                        bbean.style("opacity", 1)
+                        bchicken.style("opacity", 1)
+                        begg.style("opacity", 1)
+                        bmilk.style("opacity", 1)
+                        bpea.style("opacity", 1)
+                        bpig.style("opacity", 1)
+                        bseafood.style("opacity", 1)
+                    }
+
+                    const mousemove = function(event, d) {
+                        var xy = d3.pointer(event,svg2.node());
+                        var x0 = x1.invert(xy[0]);
+                        var y0 = y1.invert(xy[1]);
+                        
+                        var a = bisect(dataBean, x0, 1);
+                        var b = bisect(dataChicken, x0, 1);
+                        var c = bisect(dataEgg, x0, 1);
+                        var d = bisect(dataMilk, x0, 1);
+                        var e = bisect(dataPea, x0, 1);
+                        var f = bisect(dataPig, x0, 1);
+                        var g = bisect(dataSeafood, x0, 1);
+                        var z = bisect2(arrayy, x0, 1);
+
+                        zd0 = arrayy[z - 1],
+                        zd1 = arrayy[z],
+                        zselectedData = x0 - zd0> zd1 - x0 ? zd1 : zd0;
+
+                        info3
+                        .attr("transform", "translate("+(x3(zselectedData)+50) +","+(y3(mpdiv3line)) +")")
+                        
+                        txtDate3
+                        .attr("transform", "translate("+(x3(zselectedData)+150) +","+(y3(mpdiv3line)+30) +")")
+                        .text(zselectedData)
+
+                        txtTitle3
+                        .attr("transform", "translate("+(x3(zselectedData)+150) +","+(y3(mpdiv3line)+60) +")")
+                        .text("Values in Tonnes")
+                        /*
+                        if(dataBean[x] == null && dataAgricolture[y] == null){
+                            
+                            return;
+                        }
+                        */
+                        
+                        ad0 = dataBean[a - 1],
+                        ad1 = dataBean[a];
+                        if(ad1 != null){
+                            aselectedData = x0 - ad0.date > ad1.date - x0 ? ad1 : ad0;
+                        }else{
+                            aselectedData = "null";
+                        }
+
+                        bd0 = dataChicken[b - 1],
+                        bd1 = dataChicken[b];
+                        if(bd1 != null){
+                            bselectedData = x0 - bd0.date > bd1.date - x0 ? bd1 : bd0;
+                        }else{
+                            bselectedData = "null";
+                        }
+
+                        cd0 = dataEgg[c - 1],
+                        cd1 = dataEgg[c];
+                        if(cd1 != null){
+                            cselectedData = x0 - cd0.date > cd1.date - x0 ? cd1 : cd0;
+                        }else{
+                            cselectedData = "null";
+                        }
+
+                        dd0 = dataMilk[d - 1],
+                        dd1 = dataMilk[d];
+                        if(dd1 != null){
+                            dselectedData = x0 - dd0.date > dd1.date - x0 ? dd1 : dd0;
+                        }else{
+                            dselectedData = "null";
+                        }
+
+                        ed0 = dataPea[e - 1],
+                        ed1 = dataPea[e];
+                        if(ed1 != null){
+                            eselectedData = x0 - ed0.date > ed1.date - x0 ? ed1 : ed0;
+                        }else{
+                            eselectedData = "null";
+                        }
+
+                        fd0 = dataPig[f - 1],
+                        fd1 = dataPig[f];
+                        if(fd1 != null){
+                            fselectedData = x0 - fd0.date > fd1.date - x0 ? fd1 : fd0;
+                        }else{
+                            fselectedData = "null";
+                        }
+
+                        gd0 = dataSeafood[g - 1],
+                        gd1 = dataSeafood[g];
+                        if(gd1 != null){
+                            gselectedData = x0 - gd0.date > gd1.date - x0 ? gd1 : gd0;
+                        }else{
+                            gselectedData = "null";
+                        }
+                    
+                 
+                        
+                        
+
+                        txtbean
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+80) +")")
+                        .text("Bean: "+aselectedData.Bean);
+
+                        txtchicken
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+100) +")")
+                        .text("chicken: "+bselectedData.Chicken);
+
+                        txtegg
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+120) +")")
+                        .text("Egg: "+cselectedData.Egg);
+
+                        txtmilk
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+140) +")")
+                        .text("Milk: "+dselectedData.Milk);
+
+                        txtpea
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+160) +")")
+                        .text("Pea: "+eselectedData.Pea);
+
+                        txtpig
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+180) +")")
+                        .text("Pig: "+fselectedData.Pig);
+
+                        txtseafood
+                        .attr("transform", "translate("+(x3(zselectedData)+110) +","+(y3(mpdiv3line)+200) +")")
+                        .text("Seafood: "+gselectedData.Seafood);
+
+            
+                        bbean
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+75.5) +")")
+
+                        bchicken
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+95.5) +")")
+
+                        begg
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+115.5) +")")
+                        
+                        bmilk
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+135.5) +")")
+
+                        bpea
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+155.5) +")")
+
+                        bpig
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+175.5) +")")
+                        
+                        bseafood
+                        .attr("transform", "translate("+(x3(zselectedData)+100) +","+(y3(mpdiv3line)+195.5) +")")
+                       
+                   
+                        if(aselectedData != "null")
+                        ballbean
+                        .attr("transform", "translate("+(x3(aselectedData.date)) +","+(y3(aselectedData.Bean)) +")")
+
+                        if(bselectedData != "null")
+                        ballchicken
+                        .attr("transform", "translate("+(x3(bselectedData.date)) +","+(y3(bselectedData.Chicken)) +")")
+
+                        if(cselectedData != "null")
+                        ballegg
+                        .attr("transform", "translate("+(x3(cselectedData.date)) +","+(y3(cselectedData.Egg)) +")")
+
+                        if(dselectedData != "null")
+                        ballmilk
+                        .attr("transform", "translate("+(x3(dselectedData.date)) +","+(y3(dselectedData.Milk)) +")")
+
+                        if(eselectedData != "null")
+                        ballpea
+                        .attr("transform", "translate("+(x3(eselectedData.date)) +","+(y3(eselectedData.Pea)) +")")
+
+                        if(fselectedData != "null")
+                        ballpig
+                        .attr("transform", "translate("+(x3(fselectedData.date)) +","+(y3(fselectedData.Pig)) +")")
+
+                        if(gselectedData != "null")
+                        ballseafood
+                        .attr("transform", "translate("+(x3(gselectedData.date)) +","+(y3(gselectedData.Seafood)) +")")
+
+
+                    }
+
+                    const mouseleave = function(event,d) {
+
+                        txtDate3.style("opacity", 0)
+                        txtTitle3.style("opacity", 0)
+                        txtbean.style("opacity", 0)
+                        txtchicken.style("opacity", 0)
+                        txtegg.style("opacity", 0)
+                        txtmilk.style("opacity", 0)
+                        txtpea.style("opacity", 0)
+                        txtpig.style("opacity", 0)
+                        txtseafood.style("opacity", 0)
+                        info3.style("opacity", 0)
+                        ballbean.style("opacity", 0)
+                        ballchicken.style("opacity", 0)
+                        ballegg.style("opacity", 0)
+                        ballmilk.style("opacity", 0)
+                        ballpea.style("opacity", 0)
+                        ballpig.style("opacity", 0)
+                        ballseafood.style("opacity", 0)
+                        bbean.style("opacity", 0)
+                        bchicken.style("opacity", 0)
+                        begg.style("opacity", 0)
+                        bmilk.style("opacity", 0)
+                        bpea.style("opacity", 0)
+                        bpig.style("opacity", 0)
+                        bseafood.style("opacity", 0)
+                    }
+
+                    const rect = svg3
+                        .append('rect')
+                        .style("fill", "none")
+                        .style("pointer-events", "all")
+                        .attr('width', widthcon2)
+                        .attr('height', heightcon2)
+                        .on('mouseover', mouseover)
+                        .on('mousemove', mousemove)
+                        .on('mouseout', mouseleave);
+
+           
+                    svg3.select("#bean").select("path")
+                    .datum(dataBean)
+                    .attr("fill", "none")
+                    .attr("stroke", "#8fe388")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Bean); })
+                        )
+
+                    svg3.select("#chicken").select("path")
+                    .datum(dataChicken)
+                    .attr("fill", "none")
+                    .attr("stroke", "#e55c90")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Chicken); })
+                        )
+
+                    svg3.select("#egg").select("path")
+                    .datum(dataEgg)
+                    .attr("fill", "none")
+                    .attr("stroke", "#ffa059")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Egg); })
+                        )
+
+                    svg3.select("#milk").select("path")
+                    .datum(dataMilk)
+                    .attr("fill", "none")
+                    .attr("stroke", "#d1cfb2")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Milk); })
+                        )
+
+                    svg3.select("#pea").select("path")
+                    .datum(dataPea)
+                    .attr("fill", "none")
+                    .attr("stroke", "#375543")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Pea); })
+                        )
+
+                    svg3.select("#pig").select("path")
+                    .datum(dataPig)
+                    .attr("fill", "none")
+                    .attr("stroke", "steelblue")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Pig); })
+                        )
+
+                    svg3.select("#seafood").select("path")
+                    .datum(dataSeafood)
+                    .attr("fill", "none")
+                    .attr("stroke", "#2acaea")
+                    .attr("stroke-width", 2)
+                    .transition()
+                    .duration(1000)
+                    .attr("d", d3.line()
+                        .x(function(d) { return x3(d.date); })
+                        .y(function(d) { return y3(d.Seafood); })
+                        )
+
+
+                });
+                });
+                });
+                });
+                });
+                });
+                });
+
+            }
+
+
+
+
+            function CheckMax(a, yaxis3max){
+    
+                if(parseFloat(a,10) > yaxis3max){
+                    mpdiv3line = a;
+                    yaxis3max = a;
+                }
+
+                return yaxis3max
+            }
+
+
+
+
+
+
+
+
+            /*
+                -------------------------------------FINE--------------------------------------------
+            */
+
+            d3.select("#btnback").on("click", function() {
+            
+                d3.select("#con1").style("display", "block");
+                d3.select("#con2").style("display", "none");
+                d3.select("#btnback").style("display", "none");
+            });
+        </script>
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+</html>
