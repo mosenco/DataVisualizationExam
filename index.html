@@ -423,7 +423,7 @@
                     })
 
                 svg.append("text")
-                .text("Annual CO2 emission")
+                .text("Annual CO2 emission measured in tonnes")
                 .style("font-size", "15px")
                 .attr("transform", "translate(500,25)")
                 .style("text-anchor", "middle")
@@ -663,7 +663,8 @@
                 const yname1 = svg1.append("text")
                     .style("font-size", "10px")
                     .text("grams")
-                    .attr("transform", "translate(-26,-3)")
+                    .attr("transform", "translate(0,-5)")
+        .attr("text-anchor", "end")
 
                 const xname1 = svg1.append("text")
                     .style("font-size", "10px")
@@ -988,7 +989,8 @@
             const yname2 = svg2.append("text")
                 .style("font-size", "10px")
                 .text("percentage")
-                .attr("transform", "translate(-26,-3)")
+                .attr("transform", "translate(0,-5)")
+                .attr("text-anchor", "end")
 
             const xname2 = svg2.append("text")
                 .style("font-size", "10px")
@@ -1525,7 +1527,8 @@
             const yname3 = svg3.append("text")
                 .style("font-size", "10px")
                 .text("tonnes")
-                .attr("transform", "translate(-26,-3)")
+                .attr("transform", "translate(0,-5)")
+                .attr("text-anchor", "end")
 
             const xname3 = svg3.append("text")
                 .style("font-size", "10px")

@@ -153,6 +153,11 @@
         .attr("class","myYaxis")
         .style("font-size","10px");
 
+        const yname3 = svg.append("text")
+        .style("font-size", "10px")
+        .text("tonnes")
+        .attr("transform", "translate(0,-5)")
+        .attr("text-anchor", "end")
 
         d3.csv("water.csv").then(function(dataraw){
             var data = dataraw;
